@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexa Studios — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --black-soft: #111111;
+      --black-mid: #1a1a1a;
+      --black-card: #161616;
+      --gold: #c9a84c;
+      --gold-light: #e2c97e;
+      --gold-dim: #8a6d2e;
+      --ivory: #f5f0e8;
+      --ivory-dim: #a0998a;
+      --espresso: #2b1f14;
+      --danger: #c0504d;
+      --success: #3dbd7d;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Montserrat', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--black);
+      color: var(--ivory);
+      font-family: var(--sans);
+      font-weight: 300;
+      min-height: 100vh;
+    }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 220px;
+      height: 100vh;
+      background: var(--espresso);
+      border-right: 0.5px solid rgba(201,168,76,0.15);
+      display: flex;
+      flex-direction: column;
+      padding: 40px 0;
+      z-index: 10;
+    }
+    .sidebar-logo {
+      padding: 0 28px;
+      margin-bottom: 48px;
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--ivory);
+      text-decoration: none;
+    }
+    .sidebar-logo span { color: var(--gold); }
+    .sidebar-label {
+      font-size: 8px;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      padding: 0 28px;
+      margin-bottom: 12px;
+    }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 28px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+      text-decoration: none;
+      transition: color 0.3s, background 0.3s;
+    }
+    .sidebar-nav li a:hover,
+    .sidebar-nav li a.active {
+      color: var(--gold-light);
+      background: rgba(201,168,76,0.07);
+    }
+    .sidebar-nav li a .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      border: 0.5px solid currentColor;
+      flex-shrink: 0;
+    }
+    .sidebar-nav li a.active .dot { background: var(--gold); border-color: var(--gold); }
+    .sidebar-back {
+      margin-top: auto;
+      padding: 0 28px;
+    }
+    .sidebar-back a {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .sidebar-back a:hover { color: var(--gold-light); }
+
+    /* MAIN */
+    .main {
+      margin-left: 220px;
+      padding: 48px 52px;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+    }
+    .topbar-title {
+      font-family: var(--serif);
+      font-size: 34px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: var(--ivory);
+    }
+    .topbar-title em { font-style: italic; color: var(--gold-light); }
+    .topbar-date {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--ivory-dim);
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: var(--black-card);
+      border: 0.5px solid rgba(201,168,76,0.12);
+      padding: 24px 28px;
+    }
+    .stat-card-label {
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 12px;
+    }
+    .stat-card-value {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--ivory);
+    }
+    .stat-card-sub {
+      font-size: 10px;
+      color: var(--ivory-dim);
+      margin-top: 6px;
+    }
+
+    /* PANEL */
+    .panel {
+      background: var(--black-card);
+      border: 0.5px solid rgba(201,168,76,0.1);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.1);
+    }
+    .panel-title {
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .panel-body { padding: 28px; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    thead th {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    th:nth-child(1) { width: 14%; }
+    th:nth-child(2) { width: 13%; }
+    th:nth-child(3) { width: 18%; }
+    th:nth-child(4) { width: 14%; }
+    th:nth-child(5) { width: 11%; }
+    th:nth-child(6) { width: 10%; }
+    th:nth-child(7) { width: 10%; }
+    th:nth-child(8) { width: 10%; }
+    tbody tr { transition: background 0.25s; }
+    tbody tr:hover { background: rgba(201,168,76,0.04); }
+    td {
+      padding: 13px 12px;
+      font-size: 13px;
+      color: var(--ivory);
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+    }
+    .badge-active { background: rgba(61,189,125,0.12); color: var(--success); }
+    .badge-cancelled { background: rgba(192,80,77,0.12); color: var(--danger); }
+
+    /* BUTTONS */
+    .btn {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border: 0.5px solid;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-gold { color: var(--gold); border-color: var(--gold); }
+    .btn-gold:hover { background: var(--gold); color: var(--black); }
+    .btn-danger { color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-sm { padding: 6px 14px; font-size: 8px; }
+
+    /* FORM ELEMENTS */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 0; }
+    .form-label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 11px 0;
+      background: transparent;
+      border: none;
+      border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      color: var(--ivory);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.3s;
+      cursor: pointer;
+    }
+    .form-control:focus { border-bottom-color: var(--gold); }
+    .form-control option { background: var(--espresso); }
+    input[type="date"].form-control,
+    input[type="time"].form-control {
+      position: relative;
+      color-scheme: dark;
+    }
+    input[type="date"].form-control::-webkit-calendar-picker-indicator,
+    input[type="time"].form-control::-webkit-calendar-picker-indicator {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .form-actions { margin-top: 24px; display: flex; gap: 12px; align-items: center; }
+    .form-msg { font-size: 10px; color: var(--gold-light); letter-spacing: 0.1em; }
+    .form-msg.err { color: var(--danger); }
+
+    /* TWO-COL PANELS */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+
+    /* gold rule */
+    .gold-rule { width: 32px; height: 0.5px; background: var(--gold-dim); margin: 12px 0 0; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="salon-index.html" class="sidebar-logo">Nexa <span>Studios</span></a>
+    <p class="sidebar-label">Admin Panel</p>
+    <ul class="sidebar-nav">
+      <li><a href="#bookings" class="active"><span class="dot"></span> Bookings</a></li>
+      <li><a href="#block"><span class="dot"></span> Block Slots</a></li>
+      <li><a href="#services"><span class="dot"></span> Services</a></li>
+      <li><a href="#slots"><span class="dot"></span> Manage Slots</a></li>
+    </ul>
+    <div class="sidebar-back">
+      <a href="salon-index.html">← Back to Site</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <h1 class="topbar-title">Good <em>morning</em>, Admin</h1>
+        <div class="gold-rule"></div>
+      </div>
+      <p class="topbar-date" id="adminDate"></p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <p class="stat-card-label">Total Bookings</p>
+        <p class="stat-card-value" id="statTotal">—</p>
+        <p class="stat-card-sub">All time</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-label">Active</p>
+        <p class="stat-card-value" id="statActive">—</p>
+        <p class="stat-card-sub">Current reservations</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-label">Cancelled</p>
+        <p class="stat-card-value" id="statCancelled">—</p>
+        <p class="stat-card-sub">All time</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-label">Services</p>
+        <p class="stat-card-value" id="statServices">—</p>
+        <p class="stat-card-sub">On the menu</p>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="panel" id="bookings">
+      <div class="panel-header">
+        <p class="panel-title">Reservations</p>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <label class="form-label" style="margin:0;white-space:nowrap;">Filter by date</label>
+            <input type="date" id="filterDate" class="form-control" style="width:160px;padding:6px 0;" onchange="renderBookings()" color-scheme="dark">
+            <button class="btn btn-gold btn-sm" onclick="document.getElementById('filterDate').value='';renderBookings()">Clear</button>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="loadData()">Refresh</button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding:0; overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BLOCK + SERVICES -->
+    <div class="two-col">
+
+      <!-- BLOCK SLOT -->
+      <div class="panel" id="block">
+        <div class="panel-header"><p class="panel-title">Block a Slot</p></div>
+        <div class="panel-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" id="blockDate" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time</label>
+              <select id="blockTime" class="form-control"></select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="blockSlot()">Block Slot</button>
+            <span class="form-msg" id="blockMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD / REMOVE SERVICE -->
+      <div class="panel" id="services">
+        <div class="panel-header"><p class="panel-title">Services</p></div>
+        <div class="panel-body">
+          <label class="form-label" style="margin-bottom:16px;display:block;">Add Service</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Service Name</label>
+              <input type="text" id="serviceName" class="form-control" placeholder="e.g. Gel Extensions">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Capacity</label>
+              <input type="number" id="serviceCapacity" class="form-control" placeholder="e.g. 2" min="1">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="addService()">Add Service</button>
+            <span class="form-msg" id="serviceMsg"></span>
+          </div>
+          <div style="height:0.5px;background:rgba(201,168,76,0.12);margin:28px 0;"></div>
+          <label class="form-label" style="margin-bottom:16px;display:block;">Remove Service</label>
+          <div style="display:flex;gap:16px;align-items:flex-end;">
+            <div style="flex:1;">
+              <label class="form-label">Select Service</label>
+              <select id="removeServiceSelect" class="form-control"></select>
+            </div>
+            <button class="btn btn-danger" onclick="removeService()">Remove</button>
+          </div>
+          <span class="form-msg err" id="removeServiceMsg" style="display:block;margin-top:10px;"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MANAGE SLOTS -->
+    <div class="panel" id="slots">
+      <div class="panel-header"><p class="panel-title">Manage Time Slots</p></div>
+      <div class="panel-body">
+        <div class="two-col">
+          <div>
+            <label class="form-label">Add New Slot</label>
+            <div style="display:flex; gap:16px; align-items:flex-end;">
+              <input type="time" id="newSlot" class="form-control" style="flex:1;">
+              <button class="btn btn-gold" onclick="addSlot()">Add</button>
+            </div>
+            <span class="form-msg" id="addSlotMsg" style="display:block;margin-top:10px;"></span>
+          </div>
+          <div>
+            <label class="form-label">Remove Slot</label>
+            <div style="display:flex; gap:16px; align-items:flex-end;">
+              <select id="removeSlotSelect" class="form-control" style="flex:1;"></select>
+              <button class="btn btn-danger" onclick="removeSlot()">Remove</button>
+            </div>
+            <span class="form-msg err" id="removeSlotMsg" style="display:block;margin-top:10px;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbydTX7dWY_pnyuorNmVdJroID4v5OO-ykzCUTe1AZl5CIpO5fU1csO2YEDYsZG_LIGZpw/exec";
+    let globalData = null;
+
+    // date greeting
+    const now = new Date();
+    const hour = now.getHours();
+    document.querySelector('.topbar-title em').textContent =
+      hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+    document.getElementById('adminDate').textContent =
+      now.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+    async function loadData() {
+      try {
+        const res = await fetch(API_URL);
+        globalData = await res.json();
+        renderBookings();
+        loadSlotDropdowns();
+        updateStats();
+      } catch(e) { console.error('Load failed', e); }
+    }
+
+    function updateStats() {
+      const bookings = globalData.bookings.slice(1);
+      document.getElementById('statTotal').textContent = bookings.length;
+      document.getElementById('statActive').textContent = bookings.filter(r => String(r[7]).replace("'","") === 'Active').length;
+      document.getElementById('statCancelled').textContent = bookings.filter(r => String(r[7]).replace("'","") === 'Cancelled').length;
+      document.getElementById('statServices').textContent = globalData.services.slice(1).length;
+    }
+
+    function renderBookings() {
+      const tbody = document.getElementById('bookingsTable');
+      const filterDate = document.getElementById('filterDate').value;
+      tbody.innerHTML = '';
+      let shown = 0;
+      globalData.bookings.forEach((row, i) => {
+        if(i === 0) return;
+        const id = String(row[0]).replace("'","").trim();
+        const name = String(row[1]).replace("'","").trim();
+        const phone = String(row[2]).replace("'","").trim();
+        const email = String(row[3]).replace("'","").trim();
+        const service = String(row[4]).replace("'","").trim();
+        const date = String(row[5]).replace("'","").trim();
+        const time = String(row[6]).replace("'","").trim();
+        const status = String(row[7]).replace("'","").trim();
+        if(filterDate && date !== filterDate) return;
+        shown++;
+        const isActive = status === 'Active';
+        tbody.innerHTML += `
+          <tr>
+            <td>${name}</td>
+            <td style="color:var(--ivory-dim)">${phone}</td>
+            <td style="color:var(--ivory-dim)">${email}</td>
+            <td>${service}</td>
+            <td style="color:var(--ivory-dim)">${date}</td>
+            <td style="color:var(--ivory-dim)">${time}</td>
+            <td><span class="badge ${isActive ? 'badge-active' : 'badge-cancelled'}">${status}</span></td>
+            <td>${isActive ? `<button class="btn btn-danger btn-sm" onclick="cancelBooking('${id}')">Cancel</button>` : '—'}</td>
+          </tr>
+        `;
+      });
+      if(shown === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--ivory-dim);padding:32px;">No reservations found</td></tr>`;
+      }
+    }
+
+    function loadSlotDropdowns() {
+      const bt = document.getElementById('blockTime');
+      const rs = document.getElementById('removeSlotSelect');
+      const rsvc = document.getElementById('removeServiceSelect');
+      const prevBt = bt.value;
+      const prevRs = rs.value;
+      const prevRsvc = rsvc.value;
+      bt.innerHTML = '<option value="ALL">All Day</option>';
+      rs.innerHTML = '';
+      rsvc.innerHTML = '';
+      globalData.slots.forEach((row, i) => {
+        if(i === 0) return;
+        const t = String(row[0]).replace("'","").trim();
+        bt.innerHTML += `<option value="${t}">${t}</option>`;
+        rs.innerHTML += `<option value="${t}">${t}</option>`;
+      });
+      globalData.services.forEach((row, i) => {
+        if(i === 0) return;
+        const s = String(row[0]).replace("'","").trim();
+        rsvc.innerHTML += `<option value="${s}">${s}</option>`;
+      });
+      if(prevBt) bt.value = prevBt;
+      if(prevRs) rs.value = prevRs;
+      if(prevRsvc) rsvc.value = prevRsvc;
+    }
+
+    function showMsg(id, text, isErr) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'form-msg' + (isErr ? ' err' : '');
+      setTimeout(() => { el.textContent = ''; }, 3500);
+    }
+
+    async function cancelBooking(id) {
+      if(!confirm('Cancel this reservation?')) return;
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'cancelBooking', id }) });
+      loadData();
+    }
+
+    async function blockSlot() {
+      const date = document.getElementById('blockDate').value.trim();
+      const time = document.getElementById('blockTime').value.trim();
+      if(!date) { showMsg('blockMsg','Please select a date.',true); return; }
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'blockSlot', date, time }) });
+      showMsg('blockMsg','Slot blocked successfully.');
+      loadData();
+    }
+
+    async function addService() {
+      const service = document.getElementById('serviceName').value.trim();
+      const capacity = document.getElementById('serviceCapacity').value.trim();
+      if(!service || !capacity) { showMsg('serviceMsg','Please fill both fields.',true); return; }
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'addService', service, capacity }) });
+      showMsg('serviceMsg','Service added.');
+      document.getElementById('serviceName').value = '';
+      document.getElementById('serviceCapacity').value = '';
+      loadData();
+    }
+
+    async function addSlot() {
+      const raw = document.getElementById('newSlot').value;
+      if(!raw) { showMsg('addSlotMsg','Select a time.',true); return; }
+      let [h, m] = raw.split(':');
+      h = Number(h);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      const time = `${h}:${m} ${ampm}`;
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'addSlot', time }) });
+      showMsg('addSlotMsg',`${time} added.`);
+      loadData();
+    }
+
+    async function removeSlot() {
+      const time = document.getElementById('removeSlotSelect').value.trim();
+      if(!confirm(`Remove slot "${time}"?`)) return;
+      await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'removeSlot', time }) });
+      showMsg('removeSlotMsg','Slot removed.');
+      loadData();
+    }
+
+    async function removeService() {
+      const service = document.getElementById('removeServiceSelect').value.trim();
+      if(!service) { showMsg('removeServiceMsg','No service selected.',true); return; }
+      if(!confirm(`Remove "${service}"? This cannot be undone.`)) return;
+      const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'removeService', service }) });
+      await fetch(API_URL, {
+
+        method:'POST',
+
+        body: JSON.stringify({
+
+            action:'removeService',
+            service
+
+        })
+
+        });
+
+        showMsg(
+        'removeServiceMsg',
+        'Service removed.'
+        );
+
+        loadData();
+        }
+
+    loadData();
+    setInterval(loadData, 8000);
+  </script>
+</body>
+</html>
